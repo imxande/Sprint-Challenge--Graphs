@@ -2,6 +2,11 @@ from room import Room
 from player import Player
 from world import World
 
+# import sys
+# sys.path.append("./helper")
+
+# from utils import Stack, Queue
+
 import random
 from ast import literal_eval
 
@@ -28,6 +33,33 @@ player = Player(world.starting_room)
 # Fill this out with directions to walk
 # traversal_path = ['n', 'n']
 traversal_path = []
+
+# to walk back through the mase
+reverse = {'n': 's','s': 'n','w': 'e', 'e': 'w'}
+
+def map_traversal(starting_room, visited=set()):
+
+    new_path = []
+
+    for direction in player.current_room.get_exits():
+        player.travel(direction)
+
+        if player.current_room.id in visited:
+            player.travel(reverse[direction])
+        else:
+            # not visited
+            visited.add(player.current_room.id)
+
+            # push direction to new path
+            new_path.append(direction)
+            new_path = new_path + map_traversal(player.current_room.id, visited)
+            player.travel(reverse[direction])
+            new_path.append(reverse[direction])
+
+    return new_path
+
+# no longer empty arr
+traversal_path = map_traversal(player.current_room.id)
 
 
 
